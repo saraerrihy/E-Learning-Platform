@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+<div class="quiz-container" style="background-color: #1a1a1a; min-height: 100vh; padding: 2rem;">
+    <!-- Header -->
+    <div class="header mb-4">
+        <h2 class="text-primary d-flex align-items-center">
+            <i class="fas fa-plus me-2"></i> Add Question
+        </h2>
+        <p class="text-muted">Create a True/False question for your quiz</p>
+    </div>
+
+    <div class="card bg-dark text-white">
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Question Text -->
+                <div class="form-group mb-4">
+                    <label for="id_question_text" class="form-label text-info">Question Text</label>
+                    {{ form.question_text }}
+                    {% if form.question_text.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.question_text.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Points -->
+                <div class="form-group mb-4">
+                    <label for="id_points" class="form-label text-info">Points</label>
+                    {{ form.points }}
+                    {% if form.points.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.points.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Correct Answer -->
+                <div class="form-group mb-4">
+                    <label class="form-label text-info">Correct Answer</label>
+                    <div class="btn-group-vertical w-100" role="group">
+                        {% for choice in form.correct_answer %}
+                            <div class="form-check">
+                                {{ choice.tag }}
+                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                    {{ choice.choice_label }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.correct_answer.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.correct_answer.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Question
+                    </button>
+                    <a href="{% url 'quiz:quiz_edit' quiz.id %}" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Courses{% endblock %}
+
+{% block page_title %}
+    My Courses
+{% endblock %}
+
+{% block content %}
+<style>
+    .courses-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .course-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: 1px solid #eaeaea;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    
+    .course-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        background-color: #f8f9fa;
+    }
+    
+    .course-title {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: 600;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 2.6em;
+    }
+    
+    .course-actions {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .btn-primary {
+        background-color: #0d6efd;
+        border: 1px solid #0d6efd;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        border: 1px solid #dc3545;
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+    
+    .btn-success {
+        background-color: #198754;
+        border: 1px solid #198754;
+        color: white;
+        font-size: 1.1rem;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .btn-success:hover {
+        background-color: #157347;
+        border-color: #146c43;
+    }
+    
+    .create-course-container {
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .empty-state {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 3rem 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .empty-state-message {
+        color: #6c757d;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .course-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="courses-container">
+    {% if object_list %}
+        <div class="course-grid">
+            {% for course in object_list %}
+                <div class="course-card">
+                    <div class="course-header">
+                        <h3 class="course-title">{{ course.title }}</h3>
+                    </div>
+                    <div class="course-actions">
+                        <a class="btn btn-primary" href="{% url 'course_edit' course.id %}">Edit Course</a>
+                        <a class="btn btn-primary" href="{% url 'course_module_update' course.id %}">Edit Modules</a>
+                        {% if course.modules.count > 0 %}
+                            <a class="btn btn-primary" href="{% url 'module_content_list' course.modules.first.id %}">Manage Contents</a>
+                        {% endif %}
+                        <a class="btn btn-danger" href="{% url 'course_delete' course.id %}">Delete</a>
+                        <a href="{% url 'quiz:quiz_create' course.id %}" class="btn btn-outline-warning">
+                            <i class="fas fa-question-circle me-2"></i>Add Quiz
+                        </a>
+                        <a href="{% url 'quiz:my_quizzes' %}" class="btn btn-outline-info">
+                            <i class="fas fa-tasks me-2"></i>Manage Quizzes
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p class="empty-state-message">You don't have any courses yet</p>
+        </div>
+    {% endif %}
+    
+    <div class="create-course-container">
+        <a class="btn btn-success" href="{% url 'course_create' %}">Create New Course</a>
+    </div>
+</div>
+{% endblock %}

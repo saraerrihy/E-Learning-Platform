@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}My Courses{% endblock %}
+
+{% block page_title %}
+    My Courses
+{% endblock %}
+
+{% block content %}
+<style>
+    .courses-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        padding: 2rem 0;
+    }
+
+    .course-card {
+        background-color: #212529;
+        border: 1px solid #343a40;
+        border-radius: 1rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        padding: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-align: center;
+    }
+
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 15px rgba(13, 202, 240, 0.3);
+    }
+
+    .course-card h3 {
+        color: #0dcaf0;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .course-card .btn {
+        font-size: 0.95rem;
+        padding: 0.5rem 1.2rem;
+        border-radius: 0.5rem;
+    }
+
+    .no-course {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #adb5bd;
+    }
+
+    .no-course a {
+        margin-top: 1rem;
+        display: inline-block;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container courses-wrapper">
+    {% for course in object_list %}
+        <div class="course-card">
+            <h3>{{ course.title }}</h3>
+            <a class="btn btn-outline-info" href="{% url 'student_course_detail' course.id %}">
+                Access Contents
+            </a>
+        </div>
+    {% empty %}
+        <div class="no-course w-100">
+            <p class="display-6 text-info">You are not enrolled in any courses yet.</p>
+            <a class="btn btn-success text-white" href="{% url 'course_list' %}">Browse Courses</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

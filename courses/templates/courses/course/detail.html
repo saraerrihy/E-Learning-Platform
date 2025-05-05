@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block page_title %}
+    {{ object.title }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .course-detail-card {
+        background-color: #f8f9fa;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+        color: #212529;
+    }
+
+    .course-detail-card a {
+        color: #0d6efd;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .course-detail-card a:hover {
+        text-decoration: underline;
+    }
+
+    .course-detail-card h5 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #0dcaf0;
+        font-weight: bold;
+    }
+
+    .enroll-section {
+        margin-top: 2rem;
+    }
+
+    .btn-custom {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .overview-text {
+        white-space: pre-line;
+        color: #495057;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="course-detail-card text-center">
+    {% with subject=object.subject %}
+        <p class="mb-4">
+            <a href="{% url 'course_list_subject' subject.slug %}">
+                <strong>Subject:</strong> {{ subject.title }}
+            </a><br>
+            <span><strong>Modules:</strong> {{ object.modules.count }}</span><br>
+            <span><strong>Instructor:</strong> {{ object.owner }}</span>
+        </p>
+
+        <h5>Overview</h5>
+        <p class="overview-text">{{ object.overview }}</p>
+
+        <div class="enroll-section">
+            {% if request.user.is_authenticated %}
+                {% if request.user in object.students.all %}
+                    <a class="btn btn-outline-primary btn-custom" href="{% url 'student_course_detail' object.id %}">
+                        Access Course Contents
+                    </a>
+                {% else %}
+                    <form action="{% url 'student_enroll_course' %}" method="post">
+                        {% csrf_token %}
+                        {{ enroll_form }}
+                        <button type="submit" class="btn btn-primary w-100 btn-custom">Enroll Now</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <a class="btn btn-success btn-custom" href="{% url 'student_registration' %}">
+                    Register to Enroll
+                </a>
+            {% endif %}
+        </div>
+    {% endwith %}
+</div>
+{% endblock %}
+

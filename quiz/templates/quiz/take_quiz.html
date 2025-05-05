@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">{{ quiz.title }}</h3>
+                    <div id="timer" class="text-white"></div>
+                </div>
+                <div class="card-body">
+                    <div class="quiz-info mb-4">
+                        <p class="mb-2">{{ quiz.description }}</p>
+                        <div class="d-flex justify-content-between text-muted">
+                            <small><i class="fas fa-clock me-2"></i>Time Limit: {{ quiz.time_limit }} minutes</small>
+                            <small><i class="fas fa-percentage me-2"></i>Required to Pass: {{ quiz.required_score_to_pass }}%</small>
+                        </div>
+                    </div>
+
+                    <form method="post" id="quiz-form">
+                        {% csrf_token %}
+                        {% for question in quiz.questions.all %}
+                            <div class="question-card mb-4">
+                                <h5 class="question-text mb-3">
+                                    {{ forloop.counter }}. {{ question.question_text }}
+                                    <small class="text-muted">({{ question.points }} points)</small>
+                                </h5>
+                                
+                                <div class="answers-list">
+                                    {% for answer in question.answers.all %}
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" 
+                                                   id="answer_{{ answer.id }}"
+                                                   value="{{ answer.id }}"
+                                                   {% if attempt and not attempt.completed_at %}
+                                                   required
+                                                   {% endif %}>
+                                            <label class="form-check-label" for="answer_{{ answer.id }}">
+                                                {{ answer.answer_text }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check-circle me-2"></i>Submit Quiz
+                            </button>
+                            <a href="{% url 'student_course_detail' quiz.module.course.id %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Course
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .question-card {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+    }
+    .question-text {
+        color: #2c3e50;
+    }
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .form-check-label {
+        color: #495057;
+    }
+    #timer {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Timer functionality
+    const timeLimit = {{ quiz.time_limit }};
+    let timeLeft = timeLimit * 60; // Convert to seconds
+    const timerDisplay = document.getElementById('timer');
+    
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (timeLeft <= 0) {
+            document.getElementById('quiz-form').submit();
+        } else {
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+    }
+    
+    updateTimer();
+
+    // Form validation
+    const form = document.getElementById('quiz-form');
+    form.addEventListener('submit', function(event) {
+        const questions = document.querySelectorAll('.question-card');
+        let allAnswered = true;
+        
+        questions.forEach(function(question) {
+            const answers = question.querySelectorAll('input[type="radio"]:checked');
+            if (answers.length === 0) {
+                allAnswered = false;
+            }
+        });
+        
+        if (!allAnswered) {
+            event.preventDefault();
+            alert('Please answer all questions before submitting.');
+        }
+    });
+});
+</script>
+{% endblock %} 

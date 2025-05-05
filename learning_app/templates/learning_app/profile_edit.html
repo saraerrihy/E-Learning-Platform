@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="profile-edit-container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="profile-card">
+                <!-- Header Section -->
+                <div class="profile-header">
+                    <div class="header-content">
+                        <div class="avatar-wrapper">
+                            <div class="avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="avatar-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <h1 class="profile-title">Edit Profile</h1>
+                        <p class="profile-subtitle">Update your personal information</p>
+                    </div>
+                </div>
+
+                <!-- Form Section -->
+                <div class="form-section">
+                    <form method="post" class="profile-form">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <!-- First Name -->
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                                <i class="fas fa-user me-2"></i>First Name
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="error-message">{{ form.first_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                                <i class="fas fa-user me-2"></i>Last Name
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="error-message">{{ form.last_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label class="form-label" for="{{ form.email.id_for_label }}">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="error-message">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-save">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a href="{% url 'learning_app:profile' %}" class="btn btn-cancel">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-edit-container {
+        padding: 3rem 1rem;
+        min-height: calc(100vh - 60px);
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    }
+
+    .profile-card {
+        background: #1e1e1e;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-header {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        padding: 3rem 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .avatar {
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        border-radius: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #2193b0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .avatar-overlay {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: #0d6efd;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .avatar-overlay:hover {
+        transform: scale(1.1);
+    }
+
+    .profile-title {
+        color: #ffffff;
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+
+    .form-section {
+        padding: 2rem;
+    }
+
+    .profile-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        color: #00ffff;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-control {
+        background-color: #2d2d2d !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background-color: #2d2d2d !important;
+        border-color: #0d6efd !important;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+        color: #ffffff !important;
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 0 1rem;
+    }
+
+    .btn {
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-save {
+        background: linear-gradient(45deg, #00ff87 0%, #60efff 100%);
+        border: none;
+        color: #000;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        box-shadow: 0 6px 15px rgba(0, 255, 135, 0.3);
+    }
+
+    .btn-save:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, #60efff 0%, #00ff87 100%);
+        opacity: 0;
+        z-index: -1;
+        transition: all 0.5s ease;
+    }
+
+    .btn-save:hover:before {
+        opacity: 1;
+    }
+
+    .btn-save:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 255, 135, 0.4);
+        color: #000;
+    }
+
+    .btn-save:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);
+    }
+
+    .btn-save i {
+        margin-right: 8px;
+        font-size: 1.1rem;
+    }
+
+    .btn-cancel {
+        background: #2d2d2d;
+        border: 1px solid #444;
+        color: #ffffff;
+    }
+
+    .btn-cancel:hover {
+        background: #363636;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .profile-edit-container {
+            padding: 1rem;
+        }
+
+        .profile-header {
+            padding: 2rem 1rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-save {
+            order: -1; /* Makes save button appear first on mobile */
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to form fields when focused
+    const formControls = document.querySelectorAll('.form-control');
+    formControls.forEach(control => {
+        control.addEventListener('focus', function() {
+            this.closest('.form-group').classList.add('focused');
+        });
+        control.addEventListener('blur', function() {
+            if (!this.value) {
+                this.closest('.form-group').classList.remove('focused');
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

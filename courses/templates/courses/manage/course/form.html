@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if object %}
+        Edit {{ object.title }}
+    {% else %}
+        Create a new course
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="course-form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h1 class="form-title">
+                {% if object %}
+                    <span class="edit-icon">✏️</span> Edit Course
+                {% else %}
+                    <span class="create-icon">➕</span> Create New Course
+                {% endif %}
+            </h1>
+            {% if object %}
+                <p class="course-name">{{ object.title }}</p>
+            {% endif %}
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-body">
+                {% for field in form %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                                <span class="required-asterisk">*</span>
+                            {% endif %}
+                        </label>
+                        
+                        {{ field }}
+                        
+                        {% if field.help_text %}
+                            <div class="help-text">
+                                <span class="help-icon">ⓘ</span>
+                                {{ field.help_text }}
+                            </div>
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                            <div class="error-container">
+                                <ul class="error-list">
+                                    {% for error in field.errors %}
+                                        <li><span class="error-icon">⚠️</span> {{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'course_list' %}" class="btn-cancel">Cancel</a>
+                <button class="btn-save" type="submit">
+                    {% if object %}
+                        Save Changes
+                    {% else %}
+                        Create Course
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .course-form-container {
+        max-width: 850px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+    
+    .form-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    
+    .form-header {
+        background: linear-gradient(135deg, #0d6efd, #084298);
+        padding: 2rem;
+        color: white;
+        position: relative;
+    }
+    
+    .form-title {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .course-name {
+        font-size: 1.1rem;
+        margin: 0.5rem 0 0;
+        opacity: 0.9;
+        font-style: italic;
+    }
+    
+    .edit-icon, .create-icon {
+        font-size: 1.5rem;
+    }
+    
+    .form-body {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.75rem;
+        position: relative;
+    }
+    
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #344054;
+        font-size: 0.95rem;
+    }
+    
+    .required-asterisk {
+        color: #dc3545;
+        margin-left: 0.25rem;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="url"],
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: 1.5px solid #d0d5dd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background-color: #f9fafb;
+    }
+    
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus,
+    .form-group input[type="url"]:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        border-color: #0d6efd;
+        background-color: #fff;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+    }
+    
+    .form-group textarea {
+        min-height: 180px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+    
+    .help-text {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+        line-height: 1.4;
+    }
+    
+    .help-icon {
+        color: #0d6efd;
+        font-size: 1rem;
+    }
+    
+    .has-error input,
+    .has-error textarea,
+    .has-error select {
+        border-color: #dc3545;
+        background-color: #fff;
+    }
+    
+    .has-error input:focus,
+    .has-error textarea:focus,
+    .has-error select:focus {
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.15);
+    }
+    
+    .error-container {
+        margin-top: 0.5rem;
+    }
+    
+    .error-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .error-list li {
+        color: #dc3545;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0;
+    }
+    
+    .error-icon {
+        font-size: 0.9rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        background-color: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .btn-save {
+        background-color: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.9rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-save:hover {
+        background-color: #0b5ed7;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+    }
+    
+    .btn-save:active {
+        transform: translateY(0);
+    }
+    
+    .btn-cancel {
+        background-color: transparent;
+        color: #6c757d;
+        border: 1.5px solid #ced4da;
+        border-radius: 8px;
+        padding: 0.9rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-cancel:hover {
+        background-color: #f1f3f5;
+        color: #495057;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .course-form-container {
+            margin: 1.5rem auto;
+        }
+        
+        .form-header, .form-body, .form-actions {
+            padding: 1.5rem;
+        }
+        
+        .form-actions {
+            flex-direction: column-reverse;
+            gap: 1rem;
+        }
+        
+        .btn-save, .btn-cancel {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}

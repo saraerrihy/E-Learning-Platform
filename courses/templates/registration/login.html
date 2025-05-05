@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% endblock %}
+
+{% block page_title %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 450px; width: 100%;">
+        <h2 class="text-center mb-4">Sign In</h2>
+
+        {% if form.errors %}
+            <div class="alert alert-danger text-center" role="alert">
+                Incorrect username or password. Please try again.
+            </div>
+        {% else %}
+            <p class="text-center text-muted">Please enter your credentials below.</p>
+        {% endif %}
+
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <a class="text-decoration-none small" href="{% url 'student_registration' %}">
+                    Don't have an account? Register
+                </a>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">Log In</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

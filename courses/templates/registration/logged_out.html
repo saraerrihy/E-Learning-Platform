@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Logged Out{% endblock %}
+{% load static %}
+
+{% block page_title %}
+    Logged Out
+{% endblock %}
+
+{% block content %}
+<style>
+    .logout-card {
+        background-color: #212529;
+        color: #fff;
+        border: none;
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        max-width: 600px;
+        margin: 5rem auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .logout-card h1 {
+        font-size: 2rem;
+        color: #0dcaf0;
+        margin-bottom: 1rem;
+    }
+
+    .logout-card p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        color: #adb5bd;
+    }
+
+    .logout-card a {
+        color: #0dcaf0;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .logout-card a:hover {
+        text-decoration: underline;
+        color: #31d2f2;
+    }
+
+    .logout-icon {
+        font-size: 3rem;
+        color: #0dcaf0;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="logout-card text-center">
+    <div class="logout-icon">
+        <i class="bi bi-door-open-fill"></i>  {# Optional Bootstrap Icon #}
+    </div>
+    <h1>You’ve been logged out</h1>
+    <p>Thanks for visiting. You have been successfully logged out.</p>
+    <a href="{% url 'login' %}" class="btn btn-outline-info px-4 py-2">Log In Again</a>
+</div>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if subject %}
+        {{ subject.title }} Courses
+    {% else %}
+        All Courses
+    {% endif %}
+{% endblock %}
+
+{% block page_title %}
+    {% if subject %}
+        {{ subject.title }} Courses
+    {% else %}
+        All Courses
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+    .course-container {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    
+    /* Sidebar styling */
+    .sidebar {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        padding: 1.25rem;
+        position: sticky;
+        top: 2rem;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+    
+    .sidebar-header {
+        color: #212529;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .subject-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .subject-list li {
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .subject-list li a {
+        display: block;
+        padding: 0.625rem 1rem;
+        color: #495057;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+    
+    .subject-list li a:hover {
+        background-color: #e9ecef;
+    }
+    
+    .subject-list li.selected {
+        background-color: #0d6efd;
+    }
+    
+    .subject-list li.selected a {
+        color: white;
+        font-weight: 500;
+    }
+    
+    .subject-list li a span {
+        display: inline-block;
+        background-color: rgba(0,0,0,0.1);
+        padding: 0.125rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+    
+    .subject-list li.selected a span {
+        background-color: rgba(255,255,255,0.2);
+    }
+    
+    /* Course list styling */
+    .course-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .course-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    
+    .course-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .course-title {
+        margin: 0;
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+    
+    .course-title a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+    
+    .course-title a:hover {
+        text-decoration: underline;
+    }
+    
+    .course-body {
+        padding: 1.25rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .course-info {
+        margin: 0;
+        color: #6c757d;
+    }
+    
+    .subject-badge {
+        display: inline-block;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 0.25rem 0.75rem;
+        border-radius: 16px;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
+    
+    .subject-badge:hover {
+        background-color: #dee2e6;
+    }
+    
+    .modules-count {
+        margin: 0.5rem 0;
+        color: #6c757d;
+    }
+    
+    .instructor-info {
+        margin-top: 1rem;
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 992px) {
+        .course-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .sidebar {
+            position: relative;
+            top: 0;
+            max-height: none;
+            margin-bottom: 2rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .course-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="course-container">
+    <!-- Sidebar with subject filters -->
+    <aside class="sidebar">
+        <h3 class="sidebar-header">Subjects</h3>
+        <ul class="subject-list">
+            <li {% if not subject %}class="selected"{% endif %}>
+                <a href="{% url 'course_list' %}">All Courses</a>
+            </li>
+            
+            {% for s in subjects %}
+                <li {% if subject == s %}class="selected"{% endif %}>
+                    <a href="{% url 'course_list_subject' s.slug %}">
+                        {{ s.title }}
+                        <span>{{ s.total_courses }}</span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
+    
+    <!-- Course listings -->
+    <main class="course-list">
+        {% for course in courses %}
+            {% with subject=course.subject %}
+                <div class="course-card">
+                    <div class="course-header">
+                        <h3 class="course-title">
+                            <a href="{% url 'course_detail' course.slug %}">
+                                {{ course.title }}
+                            </a>
+                        </h3>
+                    </div>
+                    <div class="course-body">
+                        <div>
+                            <a href="{% url 'course_list_subject' subject.slug %}" class="subject-badge">
+                                {{ subject }}
+                            </a>
+                            <p class="modules-count">
+                                <i class="fas fa-book"></i> {{ course.total_modules }} Modules
+                            </p>
+                        </div>
+                        <p class="instructor-info">
+                            <strong>Instructor:</strong> {{ course.owner }}
+                        </p>
+                    </div>
+                </div>
+            {% endwith %}
+        {% empty %}
+            <div class="empty-courses">
+                <p>No courses available for this subject yet.</p>
+            </div>
+        {% endfor %}
+    </main>
+</div>
+{% endblock %}

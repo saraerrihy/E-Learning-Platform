@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Quiz: {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Quiz Details Section -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-gradient text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="card-title mb-0">Edit Quiz</h3>
+                        <p class="mb-0 mt-1 text-white-50">Modify quiz settings and content</p>
+                    </div>
+                    <span class="badge bg-light text-primary fs-6">
+                        <i class="fas fa-clock me-1"></i>{{ quiz.time_limit }} min
+                    </span>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-4">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                        <span class="text-danger">*</span>
+                                    {% endif %}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        {% if field.name == 'title' %}
+                                            <i class="fas fa-heading"></i>
+                                        {% elif field.name == 'description' %}
+                                            <i class="fas fa-align-left"></i>
+                                        {% elif field.name == 'time_limit' %}
+                                            <i class="fas fa-clock"></i>
+                                        {% elif field.name == 'required_score_to_pass' %}
+                                            <i class="fas fa-percent"></i>
+                                        {% endif %}
+                                    </span>
+                                    {{ field }}
+                                </div>
+                                {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <div class="alert alert-danger mt-2">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions List Section -->
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-gradient-secondary text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="card-title mb-0">Questions</h4>
+                        <p class="mb-0 mt-1 text-white-50">Manage quiz questions</p>
+                    </div>
+                    <a href="{% url 'quiz:question_create' quiz.id %}" class="btn btn-light">
+                        <i class="fas fa-plus me-2"></i>Add Question
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    {% if questions %}
+                        <div class="question-list">
+                            {% for question in questions %}
+                                <div class="question-item p-3 border-bottom {% if forloop.last %}border-0{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h6 class="mb-0 text-primary">Question {{ forloop.counter }}</h6>
+                                        <span class="badge bg-primary">{{ question.points }} pts</span>
+                                    </div>
+                                    <p class="mb-2 text-truncate">{{ question.text }}</p>
+                                    <div class="question-meta d-flex align-items-center text-muted small mb-3">
+                                        <span class="me-3">
+                                            <i class="fas fa-list-ul me-1"></i>
+                                            {{ question.get_question_type_display }}
+                                        </span>
+                                        <span>
+                                            <i class="fas fa-check-circle me-1"></i>
+                                            {{ question.answers.filter.count }} answers
+                                        </span>
+                                    </div>
+                                    <div class="btn-group w-100">
+                                        <a href="{% url 'quiz:question_edit' question.id %}" 
+                                           class="btn btn-outline-primary">
+                                            <i class="fas fa-edit me-2"></i>Edit
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger"
+                                                onclick="confirmDelete('{% url 'quiz:question_delete' question.id %}')">
+                                            <i class="fas fa-trash me-2"></i>Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center p-5">
+                            <div class="empty-state mb-4">
+                                <i class="fas fa-question-circle fa-3x text-muted"></i>
+                            </div>
+                            <h5>No Questions Yet</h5>
+                            <p class="text-muted">Start adding questions to your quiz</p>
+                            <a href="{% url 'quiz:question_create' quiz.id %}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add First Question
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Are you sure you want to delete this question? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete Question
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Card Styles */
+    .card {
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .card-header {
+        border-top-left-radius: 1rem !important;
+        border-top-right-radius: 1rem !important;
+        padding: 1.5rem;
+    }
+
+    .bg-gradient {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+    }
+
+    .bg-gradient-secondary {
+        background: linear-gradient(45deg, #4b6cb7, #182848);
+    }
+
+    /* Form Controls */
+    .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        border-color: #86b7fe;
+    }
+
+    .input-group-text {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        color: #6c757d;
+    }
+
+    /* Question List */
+    .question-list {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .question-item {
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .question-item:hover {
+        background: #f8f9fa;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #1c7a94, #5dbcd3);
+        transform: translateY(-2px);
+    }
+
+    .btn-group .btn {
+        padding: 0.5rem 1rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        color: #6c757d;
+        opacity: 0.5;
+    }
+
+    /* Custom Scrollbar */
+    .question-list::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .question-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .question-list::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    .question-list::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 1rem;
+    }
+
+    .modal-header {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+    }
+</style>
+
+<script>
+function confirmDelete(url) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    document.getElementById('deleteForm').action = url;
+    modal.show();
+}
+
+// Style form fields with Bootstrap classes
+document.addEventListener('DOMContentLoaded', function() {
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        if (!input.classList.contains('btn')) {
+            input.classList.add('form-control');
+        }
+    });
+});
+</script>
+{% endblock %} 

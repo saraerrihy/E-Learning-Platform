@@ -1,0 +1,91 @@
+/* Modern Login Styles */
+.module {
+    margin: 2% auto;
+    max-width: 450px;
+    width: 100%;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #333;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.shadow-style {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.form {
+    color: #333;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+}
+
+.form p {
+    text-align: left;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border 0.3s ease;
+}
+
+.form input[type="text"]:focus,
+.form input[type="password"]:focus,
+.form input[type="email"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.form label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #555;
+    display: block;
+}
+
+.submit,
+.form input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit:hover,
+.form input[type="submit"]:hover {
+    background: #0069d9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.hover-style {
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+.hover-style:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Card styling */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
